@@ -1,0 +1,94 @@
+---
+title: "GTEx_xCell"
+author: "Grace Hansen"
+date: "December 6, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(tidyverse)
+```
+
+## R Markdown
+
+
+```{r celltypes}
+celltypes<-fread("~/midway/GTEx_Analysis_v8_xCell_scores_7_celltypes.txt",data.table = FALSE,stringsAsFactors = FALSE)
+colnames<-c(celltypes[,1])
+celltypes<-as.data.frame(t(celltypes))
+celltypes<-celltypes[-1,]
+colnames(celltypes)<-colnames
+celltypes$sample<-rownames(celltypes)
+
+tissues<-fread("~/midway/GTEx_Analysis_2017-06-05_v8_Annotations%2FGTEx_Analysis_2017-06-05_v8_Annotations_SampleAttributesDS.txt",data.table=FALSE)
+tissues<-tissues[,c(1,14)]
+```
+
+## GTEx Subcutaneous adipose tissue
+
+```{r adipose, echo=FALSE}
+adipose_samples<-tissues$SAMPID[tissues$SMTSD=="Adipose - Subcutaneous"]
+celltypes_adipose<-celltypes[celltypes$sample %in% adipose_samples,]
+plot_dat<-gather(key="gene",value="exp",celltypes_adipose,-sample)
+
+G<-ggplot(plot_dat)+
+geom_histogram(aes(x=as.numeric(exp)),fill="steelblue4")+
+theme_minimal()+
+ggtitle("Cell types in GTEx subcutanous adipose")+
+facet_wrap(~gene)
+G  
+```
+
+## GTEx Cortex tissue
+```{r brain, echo=FALSE}
+
+brain_samples<-tissues$SAMPID[tissues$SMTSD=="Brain - Cortex"]
+celltypes_brain<-celltypes[celltypes$sample %in% brain_samples,]
+plot_dat<-gather(key="gene",value="exp",celltypes_brain,-sample)
+
+G<-ggplot(plot_dat)+
+geom_histogram(aes(x=as.numeric(exp)),fill="steelblue4")+
+theme_minimal()+
+ggtitle("Cell types in GTEx cortex")+
+facet_wrap(~gene)
+G  
+```
+
+## CMC Cortex tissue
+```{r CMC, echo =FALSE}
+CMC_celltypes<-fread("~/midway/expression/obesity/cortex/cortex_GTEx_xCell_results.txt",data.table = FALSE,stringsAsFactors = FALSE)
+colnames<-c(CMC_celltypes[,1])
+CMC_celltypes<-as.data.frame(t(CMC_celltypes))
+CMC_celltypes<-CMC_celltypes[-1,]
+colnames(CMC_celltypes)<-colnames
+CMC_celltypes$sample<-rownames(CMC_celltypes)
+
+#Test cell type of neurons
+celltypes_CMC<-CMC_celltypes[!(grepl("GTEX",CMC_celltypes$sample)),]
+plot_dat<-gather(key="gene",value="exp",celltypes_CMC,-sample)
+
+G<-ggplot(plot_dat)+
+geom_histogram(aes(x=as.numeric(exp)),fill="steelblue4")+
+theme_minimal()+
+ggtitle("Cell types in CMC cortex")+
+facet_wrap(~gene)
+G  
+
+
+```
+
+```{r CMC adipose, echo=FALSE}
+#Test cell type of other tissues
+celltypes_adipose<-CMC_celltypes[grepl("Adipose_Subcutaneous",CMC_celltypes$sample),]
+plot_dat<-gather(key="gene",value="exp",celltypes_adipose,-sample)
+
+G<-ggplot(plot_dat)+
+geom_histogram(aes(x=as.numeric(exp)),fill="steelblue4")+
+theme_minimal()+
+ggtitle("Cell types in subcutaneous adipose from CMC run")+
+facet_wrap(~gene)
+G  
+
+```
