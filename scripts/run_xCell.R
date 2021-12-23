@@ -19,13 +19,13 @@ prefix<-strsplit(basename(args[1]),'[.]')[[1]][1]
 
 print(working_dir)
 print(prefix)
-if (len(args)>1) {
-  celltypes<-strsplit(args[2],',')[[1]]
-} else {
-  celltypes<-c("Adipocytes","Epithelial cells","Hepatocytes","Keratinocytes","Myocytes","Neurons","Neutrophils")
-}
+#if (len(args)>1) {
+#  celltypes<-strsplit(args[2],',')[[1]]
+#} else {
+#  celltypes<-c("Adipocytes","Epithelial cells","Hepatocytes","Keratinocytes","Myocytes","Neurons","Neutrophils")
+#}
 
 #Run xCell
 out<-xCellAnalysis(dat)
-out<-out[which(rownames(out)%in%celltypes),]
-write.table(out,paste(working_dir,"/",prefix,"_results_7celltypes.txt",sep=''),quote=FALSE,sep='\t')
+#out<-out[which(rownames(out)%in%celltypes),]
+write.table(out,paste(working_dir,"/",prefix,"_results.txt",sep=''),quote=FALSE,sep='\t')
